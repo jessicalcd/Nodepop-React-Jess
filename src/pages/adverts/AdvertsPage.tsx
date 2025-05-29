@@ -18,6 +18,7 @@ const AdvertsPage: React.FC = () => {
   const [selectedTagsInput, setSelectedTagsInput] = useState<string[]>([]);
 
   const fetchAdvertsAndInitialTags = async (currentFilters?: AdFilters) => {
+    console.log('[AdvertsPage] fetchAdvertsAndInitialTags llamado con filtros:', currentFilters); // LOG 1
     setIsLoading(true);
     setError(null);
     try {
@@ -32,6 +33,8 @@ const AdvertsPage: React.FC = () => {
         tagsPromise
       ]);
       
+      console.log('[AdvertsPage] Anuncios recibidos:', fetchedAdverts); // LOG 2
+      console.log('[AdvertsPage] Tags recibidos/existentes:', fetchedTags); // LOG 3
       setAdverts(fetchedAdverts);
       if (availableTags.length === 0) { 
         setAvailableTags(fetchedTags);
@@ -53,6 +56,7 @@ const AdvertsPage: React.FC = () => {
 
   const handleApplyFilters = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    console.log('[AdvertsPage] handleApplyFilters llamado'); // LOG 5
     
     let priceFilterValue = '';
     if (priceMinInput && priceMaxInput) {
@@ -70,6 +74,11 @@ const AdvertsPage: React.FC = () => {
       tags: selectedTagsInput.length > 0 ? selectedTagsInput.join(',') : undefined,
     };
     
+    if (activeFilters.sale === 'true') {
+      activeFilters.sale = true as any; // Temporalmente any si AdFilters lo tiene como string
+    } else if (activeFilters.sale === 'false') {
+      activeFilters.sale = false as any; // Temporalmente any
+    }
    
     Object.keys(activeFilters).forEach(keyStr => {
       const key = keyStr as keyof AdFilters;
@@ -77,6 +86,8 @@ const AdvertsPage: React.FC = () => {
         delete activeFilters[key];
       }
     });
+
+    console.log('[AdvertsPage] Filtros activos a enviar:', activeFilters); // LOG 6
 
     fetchAdvertsAndInitialTags(activeFilters);
   };
