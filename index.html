@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nodepop Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      // Opcional: Configuración básica de Tailwind para extender el tema
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'], // Usaremos la fuente Inter
+            },
+          }
+        }
+      }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+      body { 
+        font-family: 'Inter', sans-serif; 
+        @apply bg-slate-100 text-slate-800 antialiased; /* Clases de Tailwind aplicadas con @apply (necesitarías PostCSS para esto en un CSS real, pero aquí es un ejemplo) */
+      }
+      /* Simulación de @apply para el body si no se usa PostCSS directamente en <style> */
+      html, body {
+        height: 100%;
+      }
+      body {
+        background-color: #f1f5f9; /* bg-slate-100 */
+        color: #1e293b; /* text-slate-800 */
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      #root {
+        min-height: 100%;
+        display: flex;
+        flex-direction: column;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
