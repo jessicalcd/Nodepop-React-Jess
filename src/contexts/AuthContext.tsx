@@ -6,13 +6,13 @@ import {
   getShouldRememberSession,
   setShouldRememberSession
 } from '../utils/storage'; 
-import { getCurrentUser } from '../services/authService'; // ¡Importa getCurrentUser!
+import { getCurrentUser } from '../services/authService'; 
 import { User } from '../types'; 
 
 interface AuthContextType {
   isLogged: boolean;
   token: string | null;
-  currentUser: User | null; // Para guardar datos del usuario logueado
+  currentUser: User | null; 
   login: (token: string, remember?: boolean) => void;
   logout: () => void;
   isLoadingAuth: boolean; 
@@ -26,10 +26,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [isLoadingAuth, setIsLoadingAuth] = useState(true); 
 
   const fetchAndSetCurrentUser = useCallback(async () => {
-    // Esta función asume que el token ya está en apiClient por el interceptor
-    // o porque se acaba de hacer login y está en el estado 'token'.
-    // No es necesario pasar el token como argumento si el interceptor está activo.
-    if (getStoredToken()) { // Solo intenta si hay un token
+    if (getStoredToken()) { 
       try {
         console.log('[AuthContext] Intentando obtener currentUser...');
         const user = await getCurrentUser();
@@ -37,18 +34,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         console.log('[AuthContext] CurrentUser obtenido:', user);
       } catch (error) {
         console.error("[AuthContext] Error al obtener datos del usuario actual (posible token inválido/expirado):", error);
-        // Si falla obtener el usuario (ej. token expirado), deslogueamos
-        // Es importante que la función logout se defina antes o se use con useCallback para evitar bucles si logout cambia.
-        // Para simplificar, llamaremos a las funciones de limpieza directamente aquí.
         removeStoredToken();
         setTokenState(null);
         setCurrentUser(null);
-        // Considera si aquí deberías forzar una redirección a /login si la app ya está montada.
-        // El ProtectedRoute se encargará de redirigir si isLogged se vuelve false.
       }
     }
-  }, []); // No hay dependencias si getStoredToken es estable y getCurrentUser no depende de props/estado de aquí
-
+  }, []); 
  
   const logout = useCallback(() => {
     console.log('[AuthContext] Cerrando sesión...');
@@ -56,25 +47,22 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setTokenState(null);
     setCurrentUser(null);
 
-    //window.location.href = '/login'; 
   }, []);
 
  
   useEffect(() => {
     const attemptAutoLogin = async () => {
-      setIsLoadingAuth(true); // Indicar que estamos cargando
+      setIsLoadingAuth(true); 
       const storedToken = getStoredToken();
       const shouldRemember = getShouldRememberSession();
 
 if (storedToken && shouldRemember) {
         console.log('[AuthContext] Token encontrado en storage y se debe recordar. Estableciendo token.');
-        setTokenState(storedToken); // Establece el token para que el interceptor de apiClient lo use
-        await fetchAndSetCurrentUser(); // Intenta obtener los datos del usuario
+        setTokenState(storedToken); 
+        await fetchAndSetCurrentUser(); 
       } else if (storedToken && !shouldRemember) {
-        // Si hay token pero no se debe recordar (sesión anterior), limpiar
         console.log('[AuthContext] Token encontrado pero no se debe recordar. Limpiando.');
-        removeStoredToken(); // Llama a la función de limpieza
-        setTokenState(null);
+        removeStoredToken(); 
         setCurrentUser(null);
       }
       setIsLoadingAuth(false);
@@ -87,9 +75,9 @@ if (storedToken && shouldRemember) {
     console.log('[AuthContext] Iniciando sesión con nuevo token.');
     storeToken(newToken);
     setShouldRememberSession(remember);
-    setTokenState(newToken); // Establece el token para que el interceptor de apiClient lo use
-    setIsLoadingAuth(true); // Mientras se carga el usuario
-    await fetchAndSetCurrentUser(); // Obtiene los datos del usuario después de establecer el token
+    setTokenState(newToken); 
+    setIsLoadingAuth(true); 
+    await fetchAndSetCurrentUser(); 
     setIsLoadingAuth(false);
   };
 
@@ -98,7 +86,7 @@ if (storedToken && shouldRemember) {
     <AuthContext.Provider value={{ 
       isLogged: !!token, 
       token, 
-      currentUser,  // <--- PROVEER currentUser
+      currentUser,  
       login, 
       logout, 
       isLoadingAuth 

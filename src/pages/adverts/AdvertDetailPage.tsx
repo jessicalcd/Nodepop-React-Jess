@@ -4,6 +4,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import Layout from '../../components/Layout/Layout'; 
 import { getAdvertDetail, deleteAdvert } from '../../services/advertsService'; 
 import { Ad } from '../../types';
+import axios from 'axios';
 
 
 const AdvertDetailPage: React.FC = () => {
@@ -33,20 +34,45 @@ const AdvertDetailPage: React.FC = () => {
           setAdvert(fetchedAdvert);
         }
       } catch (err: any) {
-        if (isActive) {
-          if (err.response && err.response.status === 404) {
-            navigate('/404', { replace: true });
+      if (isActive) {
+        console.error("Error DETALLADO en fetchAdvert (AdvertDetailPage):", err); 
+        
+        let errorMessage = 'Error desconocido al cargar el detalle del anuncio.';
+        let shouldNavigateTo404 = false;
+
+        if (axios.isAxiosError(err)) {
+          console.log("[AdvertDetailPage] El error es un AxiosError.");
+          if (err.response) {
+            console.log("[AdvertDetailPage] err.response.status:", err.response.status);
+            if (err.response.status === 404) {
+              shouldNavigateTo404 = true;
+            } else {
+              errorMessage = err.response.data?.message || `Error del servidor: ${err.response.status}`;
+            }
+          } else if (err.request) {
+            console.log("[AdvertDetailPage] Error de Axios sin respuesta del servidor (err.request existe)");
+            errorMessage = 'No se pudo conectar con el servidor.';
           } else {
-            const errorMessage = err.response?.data?.message || err.message || 'Error al cargar el detalle del anuncio.';
-            setError(errorMessage);
-            console.error("Error fetching advert detail:", err);
+            console.log("[AdvertDetailPage] Error de Axios al configurar la petición (err.message)");
+            errorMessage = err.message;
           }
+        } else if (err instanceof Error) { 
+          console.log("[AdvertDetailPage] Error genérico de JavaScript");
+          errorMessage = err.message;
         }
-      } finally {
-        if (isActive) {
-          setIsLoading(false);
+
+        if (shouldNavigateTo404) {
+          console.log("[AdvertDetailPage] Redirigiendo a /404...");
+          navigate('/404', { replace: true });
+        } else {
+          setError(errorMessage);
         }
       }
+  } finally {
+    if (isActive) {
+      setIsLoading(false);
+    }
+  }
     };
 
     fetchAdvert();
