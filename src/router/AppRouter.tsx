@@ -4,6 +4,7 @@ import ProtectedRoute from '../components/ProtectedRoute/ProtectedRoute';
 
 
 const LoginPage = React.lazy(() => import('../pages/auth/LoginPage'));
+const SignupPage = React.lazy(() => import('../pages/auth/SignupPage'));
 const AdvertsPage = React.lazy(() => import('../pages/adverts/AdvertsPage'));
 const AdvertDetailPage = React.lazy(() => import('../pages/adverts/AdvertDetailPage'));
 const NewAdvertPage = React.lazy(() => import('../pages/adverts/NewAdvertPage'));
@@ -21,10 +22,9 @@ const AppRouter: React.FC = () => {
   return (
     <Suspense fallback={<PageLoader />}>
       <Routes>
-        {/* Rutas Públicas */}
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/auth/signup" element={<SignupPage />} />
 
-        {/* Rutas Protegidas */}
         <Route element={<ProtectedRoute />}>
           <Route path="/" element={<Navigate to="/adverts" replace />} />
           <Route path="/adverts" element={<AdvertsPage />} />
@@ -32,7 +32,6 @@ const AppRouter: React.FC = () => {
           <Route path="/adverts/:id" element={<AdvertDetailPage />} />
         </Route>
         
-        {/* Ruta para 404 */}
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </Suspense>

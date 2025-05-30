@@ -136,7 +136,7 @@ const LoginPage: React.FC = () => {
         <p className="mt-6 text-center text-sm text-gray-600">
           ¿Nuevo en Nodepop?{' '}
           <Link to="/auth/signup" className="font-medium text-indigo-600 hover:text-indigo-500">
-            Crea una cuenta (funcionalidad de registro no implementada en frontend aún)
+            Crea una cuenta 
           </Link>
         </p>
       </div>
