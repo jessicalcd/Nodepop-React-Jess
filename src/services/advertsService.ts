@@ -4,11 +4,10 @@ import { Ad, AdFilters } from '../types';
 
 export const getAdverts = async (params?: AdFilters): Promise<Ad[]> => {
   try {
-    const response = await apiClient.get<{ results: Ad[] }>('/v1/adverts', { params });
-    
-    return response.data?.results || []; 
+    const response = await apiClient.get<Ad[]>('/v1/adverts', { params });
+    return response.data || []; 
   } catch (error) {
-    console.error("Error en getAdverts:", error);
+    console.error("[advertsService] Error en getAdverts:", error);
     return []; 
   }
 };
