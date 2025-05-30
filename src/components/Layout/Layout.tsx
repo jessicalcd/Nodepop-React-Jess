@@ -1,6 +1,6 @@
-import React, { ReactNode } from 'react';
-import { Link, NavLink } from 'react-router-dom'; 
-import { useAuth } from '../../contexts/AuthContext';
+import React, { ReactNode, useState } from 'react';
+import { Link, NavLink } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext'; 
 
 interface LayoutProps {
   title?: string;
@@ -9,12 +9,15 @@ interface LayoutProps {
 
 const Layout: React.FC<LayoutProps> = ({ title, children }) => {
   const { isLogged, logout, isLoadingAuth, currentUser } = useAuth();
-  
+  const [showLogoutConfirmModal, setShowLogoutConfirmModal] = useState(false); 
 
-  const handleLogout = () => {
-    if (window.confirm('¿Estás seguro de que quieres cerrar sesión?')) {
-      logout();
-    }
+  const handleLogoutInitiate = () => {
+    setShowLogoutConfirmModal(true); 
+  };
+
+  const handleLogoutConfirm = () => {
+    logout(); 
+    setShowLogoutConfirmModal(false); 
   };
 
   return (
@@ -33,7 +36,7 @@ const Layout: React.FC<LayoutProps> = ({ title, children }) => {
               <>
                 {currentUser && (
                   <span className="text-sm text-slate-300 hidden sm:block">
-                    Hola, {currentUser.name || currentUser.email} 
+                    Hola, {currentUser.name || currentUser.email}
                   </span>
                 )}
                 <NavLink 
@@ -53,9 +56,9 @@ const Layout: React.FC<LayoutProps> = ({ title, children }) => {
                   Crear Anuncio
                 </NavLink>
                 <button
-                  onClick={handleLogout}
+                  onClick={handleLogoutInitiate} 
                   className="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-3 rounded-md text-sm transition duration-150"
-                  disabled={isLoadingAuth} 
+                  disabled={isLoadingAuth}
                 >
                   Logout
                 </button>
@@ -84,6 +87,31 @@ const Layout: React.FC<LayoutProps> = ({ title, children }) => {
       <footer className="bg-slate-200 text-slate-600 text-center p-4 text-sm mt-auto">
         <p>&copy; {new Date().getFullYear()} Nodepop React. Práctica Fundamentos de React.</p>
       </footer>
+
+      {showLogoutConfirmModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 z-[100]">
+          <div className="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full transform transition-all sm:my-8">
+            <h3 className="text-lg font-semibold text-slate-800 mb-4">Confirmar Cierre de Sesión</h3>
+            <p className="text-slate-600 mb-6 text-sm">
+              ¿Estás seguro de que quieres cerrar tu sesión?
+            </p>
+            <div className="flex justify-end space-x-3">
+              <button
+                onClick={() => setShowLogoutConfirmModal(false)} 
+                className="px-4 py-2 bg-slate-200 text-slate-800 rounded-md hover:bg-slate-300 transition duration-150 text-sm font-medium"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleLogoutConfirm} 
+                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition duration-150 text-sm font-medium"
+              >
+                Sí, Cerrar Sesión
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
