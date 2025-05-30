@@ -1,3 +1,4 @@
+// src/pages/adverts/AdvertsPage.tsx
 import React, { useState, useEffect, FormEvent } from 'react';
 import { Link } from 'react-router-dom';
 import Layout from '../../components/Layout/Layout'; 
@@ -10,19 +11,19 @@ const AdvertsPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  
   const [filterNameInput, setFilterNameInput] = useState('');
-  const [filterSaleInput, setFilterSaleInput] = useState<'all' | 'true' | 'false'>('all');
+  const [filterSaleInput, setFilterSaleInput] = useState<'all' | 'true' | 'false'>('all'); // Mantiene los strings "true"/"false"
   const [priceMinInput, setPriceMinInput] = useState('');
   const [priceMaxInput, setPriceMaxInput] = useState('');
   const [selectedTagsInput, setSelectedTagsInput] = useState<string[]>([]);
 
   const fetchAdvertsAndInitialTags = async (currentFilters?: AdFilters) => {
-    console.log('[AdvertsPage] fetchAdvertsAndInitialTags llamado con filtros:', currentFilters); // LOG 1
+    console.log('[AdvertsPage] PASO 1: fetchAdvertsAndInitialTags INICIO con filtros:', JSON.stringify(currentFilters));
     setIsLoading(true);
     setError(null);
     try {
-      const advertsPromise = getAdverts(currentFilters);
+      console.log('[AdvertsPage] PASO 2: Llamando a getAdverts con:', JSON.stringify(currentFilters));
+      const advertsPromise = getAdverts(currentFilters); 
       
       const tagsPromise = availableTags.length === 0 
         ? getTags() 
@@ -33,30 +34,30 @@ const AdvertsPage: React.FC = () => {
         tagsPromise
       ]);
       
-      console.log('[AdvertsPage] Anuncios recibidos:', fetchedAdverts); // LOG 2
-      console.log('[AdvertsPage] Tags recibidos/existentes:', fetchedTags); // LOG 3
+      console.log('[AdvertsPage] PASO 4: Anuncios recibidos en AdvertsPage:', fetchedAdverts);
+      console.log('[AdvertsPage] Tags recibidos/existentes en AdvertsPage:', fetchedTags);
       setAdverts(fetchedAdverts);
-      if (availableTags.length === 0) { 
+      if (availableTags.length === 0 && Array.isArray(fetchedTags)) { 
         setAvailableTags(fetchedTags);
       }
 
     } catch (err: any) {
       const errorMessage = err.response?.data?.message || err.message || 'Error al cargar datos de anuncios.';
       setError(errorMessage);
-      console.error("Error fetching data for AdvertsPage:", err);
+      console.error("[AdvertsPage] Error en fetchAdvertsAndInitialTags:", err);
     } finally {
       setIsLoading(false);
     }
   };
-
-  
+ 
   useEffect(() => {
     fetchAdvertsAndInitialTags(); 
-   }, []); 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); 
 
   const handleApplyFilters = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    console.log('[AdvertsPage] handleApplyFilters llamado'); // LOG 5
+    console.log('[AdvertsPage] handleApplyFilters llamado');
     
     let priceFilterValue = '';
     if (priceMinInput && priceMaxInput) {
@@ -69,17 +70,14 @@ const AdvertsPage: React.FC = () => {
 
     const activeFilters: AdFilters = {
       name: filterNameInput || undefined,
+      // El valor de filterSaleInput ya es "true", "false" o "all".
+      // Si es "all", lo queremos como undefined para no enviar el filtro.
+      // Si es "true" o "false", esos son strings válidos para query params.
       sale: filterSaleInput === 'all' ? undefined : filterSaleInput,
       price: priceFilterValue || undefined,
       tags: selectedTagsInput.length > 0 ? selectedTagsInput.join(',') : undefined,
     };
     
-    if (activeFilters.sale === 'true') {
-      activeFilters.sale = true as any; // Temporalmente any si AdFilters lo tiene como string
-    } else if (activeFilters.sale === 'false') {
-      activeFilters.sale = false as any; // Temporalmente any
-    }
-   
     Object.keys(activeFilters).forEach(keyStr => {
       const key = keyStr as keyof AdFilters;
       if (activeFilters[key] === undefined || activeFilters[key] === '') {
@@ -87,7 +85,7 @@ const AdvertsPage: React.FC = () => {
       }
     });
 
-    console.log('[AdvertsPage] Filtros activos a enviar:', activeFilters); // LOG 6
+    console.log('[AdvertsPage] Filtros activos a enviar:', JSON.stringify(activeFilters));
 
     fetchAdvertsAndInitialTags(activeFilters);
   };
@@ -99,7 +97,6 @@ const AdvertsPage: React.FC = () => {
         : [...prevSelectedTags, tag]
     );
   };
-
  
   if (isLoading && adverts.length === 0) { 
     return (
@@ -116,6 +113,7 @@ const AdvertsPage: React.FC = () => {
     <Layout title="Listado de Anuncios en Nodepop">
       {/* --- Sección de Filtros --- */}
       <form onSubmit={handleApplyFilters} className="bg-white p-4 sm:p-6 rounded-lg shadow-md mb-8">
+        {/* ... (resto del formulario de filtros como lo tenías, es visualmente igual) ... */}
         <h2 className="text-xl font-semibold text-slate-700 mb-4">Filtrar Anuncios</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
           {/* Filtro por Nombre */}
@@ -174,7 +172,7 @@ const AdvertsPage: React.FC = () => {
           </div>
           
           {/* Filtro por Tags */}
-          <div className="sm:col-span-full lg:col-span-2"> {/* Ajustado para ocupar más espacio si es necesario */}
+          <div className="sm:col-span-full lg:col-span-2">
             <label className="block text-sm font-medium text-gray-700 mb-1">Tags</label>
             {availableTags.length > 0 ? (
               <div className="mt-1 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 border border-gray-300 p-3 rounded-md max-h-32 overflow-y-auto bg-white">
@@ -209,7 +207,6 @@ const AdvertsPage: React.FC = () => {
       </form>
       {/* --- Fin Sección de Filtros --- */}
       
-      {/* Muestra mensaje de error si existe */}
       {error && (
         <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6" role="alert">
           <p className="font-bold">Error al cargar anuncios</p>
@@ -217,7 +214,6 @@ const AdvertsPage: React.FC = () => {
         </div>
       )}
 
-      {/* Muestra mensaje si no hay anuncios y no está cargando (y no hay error) */}
       {!isLoading && adverts.length === 0 && !error && (
         <div className="text-center py-10 bg-white p-6 rounded-lg shadow-md">
           <p className="text-slate-600 text-lg mb-4">No se encontraron anuncios con los filtros actuales o no hay anuncios creados.</p>
@@ -230,7 +226,6 @@ const AdvertsPage: React.FC = () => {
         </div>
       )}
 
-      {/* Listado de Anuncios */}
       {adverts.length > 0 && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {adverts.map((ad) => (
@@ -265,7 +260,7 @@ const AdvertsPage: React.FC = () => {
                 <p className={`text-xs font-semibold mb-2 uppercase tracking-wider ${ad.sale ? 'text-green-600' : 'text-blue-600'}`}>
                   {ad.sale ? 'En Venta' : 'Se Busca'}
                 </p>
-                {ad.tags && ad.tags.length > 0 && (
+                {Array.isArray(ad.tags) && ad.tags.length > 0 && ( // Verificación Array.isArray para ad.tags
                   <div className="mb-3 flex flex-wrap gap-1">
                     {ad.tags.map(tag => (
                       <span key={tag} className="inline-block bg-slate-200 text-slate-700 text-xs font-semibold px-2 py-0.5 rounded-full capitalize">

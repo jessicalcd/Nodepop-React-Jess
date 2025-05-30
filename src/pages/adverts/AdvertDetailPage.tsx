@@ -22,7 +22,7 @@ const AdvertDetailPage: React.FC = () => {
       return;
     }
 
-    let isActive = true; /
+    let isActive = true; 
 
     const fetchAdvert = async () => {
       setIsLoading(true);

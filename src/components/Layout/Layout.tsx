@@ -1,7 +1,6 @@
 import React, { ReactNode } from 'react';
-import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom'; 
 import { useAuth } from '../../contexts/AuthContext';
-import appLogo from '../../assets/images/wallapop-svgrepo-com (1).svg';
 
 interface LayoutProps {
   title?: string;
@@ -9,12 +8,12 @@ interface LayoutProps {
 }
 
 const Layout: React.FC<LayoutProps> = ({ title, children }) => {
-  const { isLogged, logout, isLoadingAuth } = useAuth();
-  const navigate = useNavigate();
+  const { isLogged, logout, isLoadingAuth, currentUser } = useAuth();
+  
 
   const handleLogout = () => {
     if (window.confirm('¿Estás seguro de que quieres cerrar sesión?')) {
-      logout()
+      logout();
     }
   };
 
@@ -26,13 +25,17 @@ const Layout: React.FC<LayoutProps> = ({ title, children }) => {
             to={isLogged ? "/adverts" : "/login"} 
             className="text-xl font-bold hover:text-slate-300 transition-colors duration-150 flex items-center"
           >
-            {/* <img src={appLogo} alt="App Logo" className="h-8 w-auto mr-2" />*/ }
-            <span className="bg-green-500 p-2 rounded-md mr-2 text-sm">NP</span> {/* Placeholder logo */}
+            <span className="bg-green-500 p-2 rounded-md mr-2 text-sm">NP</span> 
             {import.meta.env.VITE_APP_NAME || 'Nodepop'}
           </Link>
           <div className="space-x-2 sm:space-x-4 flex items-center">
-            {isLogged && (
+            {isLogged ? (
               <>
+                {currentUser && (
+                  <span className="text-sm text-slate-300 hidden sm:block">
+                    Hola, {currentUser.name || currentUser.email} 
+                  </span>
+                )}
                 <NavLink 
                   to="/adverts" 
                   className={({ isActive }) => 
@@ -52,21 +55,22 @@ const Layout: React.FC<LayoutProps> = ({ title, children }) => {
                 <button
                   onClick={handleLogout}
                   className="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-3 rounded-md text-sm transition duration-150"
-                  disabled={isLoadingAuth}
+                  disabled={isLoadingAuth} 
                 >
                   Logout
                 </button>
               </>
-            )}
-            {!isLogged && !isLoadingAuth && location.pathname !== '/login' && (
-               <NavLink 
-                to="/login" 
-                className={({ isActive }) => 
-                  `px-3 py-2 rounded-md text-sm font-medium transition-colors duration-150 ${isActive ? 'bg-slate-700 text-white' : 'text-slate-300 hover:bg-slate-700 hover:text-white'}`
-                }
-               >
-                Login
-               </NavLink>
+            ) : (
+              !isLoadingAuth && location.pathname !== '/login' && (
+                <NavLink 
+                  to="/login" 
+                  className={({ isActive }) => 
+                    `px-3 py-2 rounded-md text-sm font-medium transition-colors duration-150 ${isActive ? 'bg-slate-700 text-white' : 'text-slate-300 hover:bg-slate-700 hover:text-white'}`
+                  }
+                >
+                 Login
+                </NavLink>
+              )
             )}
           </div>
         </nav>

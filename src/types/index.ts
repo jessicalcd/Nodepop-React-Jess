@@ -4,7 +4,7 @@ export interface Ad {
   sale: boolean;      
   price: number;
   tags: string[];
-  photo?: string;      // URL de la foto, es opcional. El API la devuelve como ruta relativa.  
+  photo?: string;        
   createdAt?: string;  
   updatedAt?: string;
   // owner?: string;   // El API puede devolver el ID del propietario

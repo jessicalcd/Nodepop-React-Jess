@@ -54,12 +54,10 @@ const LoginPage: React.FC = () => {
     }
   }; 
 
-
   return ( 
     <Layout title="Iniciar Sesión en Nodepop">
       <div className="max-w-md mx-auto mt-8 sm:mt-12 bg-white p-6 sm:p-8 rounded-lg shadow-xl">
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Email Input */}
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700">
               Email (usuario)
@@ -76,7 +74,6 @@ const LoginPage: React.FC = () => {
               disabled={isLoading}
             />
           </div>
-          {/* Password Input */}
           <div>
             <label htmlFor="password" className="block text-sm font-medium text-gray-700">
               Contraseña
@@ -93,7 +90,6 @@ const LoginPage: React.FC = () => {
               disabled={isLoading}
             />
           </div>
-          {/* Remember Me Checkbox */}
           <div className="flex items-center justify-between">
             <div className="flex items-center">
               <input
@@ -111,14 +107,12 @@ const LoginPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Error Message */}
           {error && (
             <p className="text-sm text-red-600 bg-red-100 p-3 rounded-md border border-red-300">
               {error}
             </p>
           )}
 
-          {/* Submit Button */}
           <div>
             <button
               type="submit"
@@ -139,21 +133,15 @@ const LoginPage: React.FC = () => {
             </button>
           </div>
         </form>
-        {/* Signup Link (opcional) */}
         <p className="mt-6 text-center text-sm text-gray-600">
           ¿Nuevo en Nodepop?{' '}
           <Link to="/auth/signup" className="font-medium text-indigo-600 hover:text-indigo-500">
-            {/* TODO: La ruta /auth/signup no está definida aún en AppRouter si no la has añadido.
-                        Para la práctica, el backend sí tiene este endpoint.
-                        Habría que añadir <Route path="/auth/signup" element={<SignupPage />} /> en AppRouter.tsx
-                        y crear el componente SignupPage.tsx.
-            */}
             Crea una cuenta (funcionalidad de registro no implementada en frontend aún)
           </Link>
         </p>
       </div>
     </Layout>
-  ); 
+  );
 }; 
 
 export default LoginPage;
