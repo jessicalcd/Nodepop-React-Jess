@@ -7,7 +7,6 @@ export interface Ad {
   photo?: string;        
   createdAt?: string;  
   updatedAt?: string;
-  // owner?: string;   // El API puede devolver el ID del propietario
 }
 
 export interface AuthResponse {
@@ -21,7 +20,6 @@ export interface User {
 
 export interface AdFilters {
   name?: string;
-  sale?: string; 
-  price?: string; 
+  sale?: string;  
   tags?: string; 
 }
